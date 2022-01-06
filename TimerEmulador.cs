@@ -75,7 +75,6 @@ namespace Company.Function
             int apcaudalsalida = new Random().Next(0, 50);
             int apniveltanques = new Random().Next(0, 50);
 
-
             int ncactual = new Random().Next(0, 100);
             int ncrecomendado = new Random().Next(0, 100);
             await signalRMessages.AddAsync(
@@ -83,19 +82,22 @@ namespace Company.Function
                 {
                     Target = "newMessage",
                     Arguments = new[] { 
-                        "[{'Siata':[{'Sensor1':{'precipitacion': "+precipitacion1+",'temperatura':"+temperatura1+",'humedad':"+humendad1+"}},{'Sensor2':{'precipitacion': "+precipitacion2+",'temperatura':"+temperatura2+",'humedad':"+humendad2+"}},{'Sensor3':{'precipitacion': "+precipitacion3+",'temperatura':"+temperatura3+",'humedad':"+humendad3+"}}],"+
-                        "{'AguaNatural':{'turbiedadentrada': "+vcturbiedadentrada+","+
-                                "'caudalentrada':"+vccaudalentrada+","+
-                                "'conductividad':"+vcconductividad+","+
-                                "'ph':"+vcph+","+
-                                "'presion':"+vcpresion+","+
-                                "'color':"+vccolor+"}},"+
-                        "{'AguaPotable':{'turbiedadsalida': "+apturbiedadsalida+","+
-                                "'caudalsalida':"+apcaudalsalida+","+
-                                "'niveltanques':"+apniveltanques+","+
-                                "'vccolor':"+apcolor+"}},"+
-                        "{'NivelesCoagulacion':{'actual': "+ncactual+","+
-                                "'recomendado':"+ncrecomendado+"}}]"
+                        "[{'Siata':["+
+                        "{'Sensor1':{'precipitacion': "+precipitacion1+",'precipitaciontime': '"+DateTime.Now.AddHours(-precipitacion1).ToString("MM/dd/yy H:mm:ss")+"','temperatura':"+temperatura1+",'temperaturatime':'"+DateTime.Now.AddHours(-temperatura1).ToString("MM/dd/yy H:mm:ss")+"','humedad':"+humendad1+",'humedadtime':'"+DateTime.Now.AddHours(-humendad1).ToString("MM/dd/yy H:mm:ss")+"'}},"+
+                        "{'Sensor2':{'precipitacion': "+precipitacion2+",'precipitaciontime': '"+DateTime.Now.AddHours(-precipitacion2).ToString("MM/dd/yy H:mm:ss")+"','temperatura':"+temperatura2+",'temperaturatime':'"+DateTime.Now.AddHours(-temperatura2).ToString("MM/dd/yy H:mm:ss")+"','humedad':"+humendad2+",'humedadtime':'"+DateTime.Now.AddHours(-humendad2).ToString("MM/dd/yy H:mm:ss")+"'}},"+
+                        "{'Sensor3':{'precipitacion': "+precipitacion3+",'precipitaciontime': '"+DateTime.Now.AddHours(-precipitacion3).ToString("MM/dd/yy H:mm:ss")+"','temperatura':"+temperatura3+",'temperaturatime':'"+DateTime.Now.AddHours(-temperatura3).ToString("MM/dd/yy H:mm:ss")+"','humedad':"+humendad3+",'humedadtime':'"+DateTime.Now.AddHours(-humendad3).ToString("MM/dd/yy H:mm:ss")+"'}}]},"+
+                        "{'AguaNatural':{'turbiedadentrada': "+vcturbiedadentrada+",'turbiedadentradatime': '"+DateTime.Now.AddHours(-vcturbiedadentrada).ToString("MM/dd/yy H:mm:ss")+"',"+
+                                "'caudalentrada':"+vccaudalentrada+","+"'caudalentradatime':'"+DateTime.Now.AddHours(-vccaudalentrada).ToString("MM/dd/yy H:mm:ss")+"',"+
+                                "'conductividad':"+vcconductividad+","+ "'conductividadtime':'"+DateTime.Now.AddHours(-vcconductividad).ToString("MM/dd/yy H:mm:ss")+"',"+
+                                "'ph':"+vcph+","+"'phtime':'"+DateTime.Now.AddHours(-vcph).ToString("MM/dd/yy H:mm:ss")+"',"+
+                                "'presion':"+vcpresion+","+"'presiontime':'"+DateTime.Now.AddHours(-vcpresion).ToString("MM/dd/yy H:mm:ss")+"',"+
+                                "'color':"+vccolor+","+"'colortime':'"+DateTime.Now.AddHours(-vccolor).ToString("MM/dd/yy H:mm:ss")+"'}},"+
+                        "{'AguaPotable':{'turbiedadsalida': "+apturbiedadsalida+",'turbiedadsalidatime': '"+DateTime.Now.AddHours(-apturbiedadsalida).ToString("MM/dd/yy H:mm:ss")+"',"+
+                                "'caudalsalida':"+apcaudalsalida+","+"'caudalsalidatime':'"+DateTime.Now.AddHours(-apcaudalsalida).ToString("MM/dd/yy H:mm:ss")+"',"+
+                                "'niveltanques':"+apniveltanques+","+"'niveltanquestime':'"+DateTime.Now.AddHours(-apniveltanques).ToString("MM/dd/yy H:mm:ss")+"',"+
+                                "'color':"+apcolor+",'colortime':'"+DateTime.Now.AddHours(-apcolor).ToString("MM/dd/yy H:mm:ss")+"'}},"+
+                        "{'NivelesCoagulacion':{'actual': "+ncactual+","+"'actualtime': '"+DateTime.Now.AddHours(-ncactual).ToString("MM/dd/yy H:mm:ss")+"',"+
+                                "'recomendado':"+ncrecomendado+",'recomendadotime':'"+DateTime.Now.AddHours(-ncrecomendado).ToString("MM/dd/yy H:mm:ss")+"'}}]"
                     }
                 });
             

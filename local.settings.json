@@ -1,0 +1,9 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "DefaultEndpointsProtocol=https;AccountName=emuladorstorage;AccountKey=yVeyMBWyn0KpWqwwjbb95lBmrQwtvq2TqxptROoVoDym7033VxamDy2/cowLWpeRWCI6JcFIHKTQCDkWm3KUfA==;EndpointSuffix=core.windows.net",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "AzureSignalRConnectionString": "Endpoint=https://emuladorsignalr.service.signalr.net;AccessKey=ruq5kruhp3HVdJs2NIRZvxfjun0rFPh5KpSrl9XB15Q=;Version=1.0;"
+  },
+  "ConnectionStrings": {}
+}

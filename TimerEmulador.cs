@@ -18,6 +18,9 @@ namespace Company.Function
     public static class TimerEmulador
     {
 
+        private static bool swSingalR = true;
+
+        private static bool swDB = true;
         private static HttpClient httpClient = new HttpClient();
 
 
@@ -29,6 +32,112 @@ namespace Company.Function
             {
                 Content = File.ReadAllText(path),
                 ContentType = "text/html",
+            };
+        }
+
+        [FunctionName("consulta")]
+        public static async Task<IActionResult> consulta([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req, ExecutionContext context)
+        {
+            string variable = req.Query["variable"];
+            string inittime = req.Query["inittime"];
+            string endtime = req.Query["endtime"];
+
+            Mensaje[] result = new Mensaje[0];
+            try
+            {
+                Program programDb = new Program();
+                await programDb.GetStartedDemoAsync();
+                result = await programDb.QueryItemsAsync(variable, inittime, endtime);
+
+            }
+            catch (CosmosException de)
+            {
+                Exception baseException = de.GetBaseException();
+                Console.WriteLine("{0} error occurred: {1}", de.StatusCode, de);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: {0}", e);
+            }
+
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject(result),
+                ContentType = "application/json",
+            };
+        }
+
+        [FunctionName("stop")]
+        public static async Task<IActionResult> stop([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req, ExecutionContext context)
+        {
+            
+            swSingalR = false;
+            swDB = false;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject("Ok"),
+                ContentType = "application/json",
+            };
+        }
+
+        [FunctionName("start")]
+        public static async Task<IActionResult> start([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req, ExecutionContext context)
+        {
+            
+            swSingalR = true;
+            swDB = true;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject("Ok"),
+                ContentType = "application/json",
+            };
+        }
+
+        [FunctionName("startDB")]
+        public static async Task<IActionResult> startDB([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req, ExecutionContext context)
+        {
+            
+            swDB = true;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject("Ok"),
+                ContentType = "application/json",
+            };
+        }
+
+        [FunctionName("startsignalr")]
+        public static async Task<IActionResult> startSignalr([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req, ExecutionContext context)
+        {
+            
+            swSingalR = true;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject("Ok"),
+                ContentType = "application/json",
+            };
+        }
+
+        [FunctionName("stopDB")]
+        public static async Task<IActionResult> stopDB([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req, ExecutionContext context)
+        {
+            
+            swDB = false;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject("Ok"),
+                ContentType = "application/json",
+            };
+        }
+
+        [FunctionName("stopsignalr")]
+        public static async Task<IActionResult> stopsignalr([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req, ExecutionContext context)
+        {
+            
+            swSingalR = false;
+            return new ContentResult
+            {
+                Content = JsonConvert.SerializeObject("Ok"),
+                ContentType = "application/json",
             };
         }
 
@@ -123,14 +232,21 @@ namespace Company.Function
                     recomendado = ncrecomendado,
                     recomendadotime = DateTime.Now.AddHours(-ncrecomendado)
                 },
-                Partition = "potabilizacion"
+                Partition = "potabilizacion123"
             };
-            Console.WriteLine("mensaje {0}", mensaje.ToString());
-            /*try
+            // Console.WriteLine("mensaje {0}", mensaje.ToString());
+            try
             {
-                Program programDb = new Program();
-                await programDb.GetStartedDemoAsync();
-                await programDb.AddItemsToContainerAsync(mensaje);
+                if (swDB)
+                {
+                    Program programDb = new Program();
+                    await programDb.GetStartedDemoAsync();
+                    await programDb.AddItemsToContainerAsync(mensaje);
+                }
+                else
+                {
+                    Console.WriteLine("ya no guarda");
+                }
 
             }
             catch (CosmosException de)
@@ -141,20 +257,24 @@ namespace Company.Function
             catch (Exception e)
             {
                 Console.WriteLine("Error: {0}", e);
-            }*/
+            }
 
             String valor = mensaje.ToString();
-            await signalRMessages.AddAsync(
-                new SignalRMessage
-                {
-                    Target = "newMessage",
-                    Arguments = new[] {
+            if (swSingalR)
+            {
+                await signalRMessages.AddAsync(
+                    new SignalRMessage
+                    {
+                        Target = "newMessage",
+                        Arguments = new[] {
                         valor
-                    }
-                });
-
-
-
+                        }
+                    });
+            }
+            else
+            {
+                Console.WriteLine("ya no publica");
+            }
         }
         private class GitResult
         {

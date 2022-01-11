@@ -41,17 +41,16 @@ namespace Company.Function
         public async Task CreateContainerAsync()
         {
             // Create a new container
-            this.container = await this.database.CreateContainerIfNotExistsAsync(containerId, "/potabilizacion");
+            this.container = await this.database.CreateContainerIfNotExistsAsync(containerId, "/id");
             Console.WriteLine("Created Container: {0}\n", this.container.Id);
         }
 
         public async Task AddItemsToContainerAsync(Mensaje mensaje)
         {
             // Create a family object for the Andersen family
-
             try
             {
-                ItemResponse<Mensaje> mensajeResponse = await this.container.CreateItemAsync<Mensaje>(mensaje, new PartitionKey("/potabilizacion"));
+                ItemResponse<Mensaje> mensajeResponse = await this.container.CreateItemAsync<Mensaje>(mensaje, new PartitionKey(mensaje.Id));
                 Console.WriteLine("Created item in database with id: {0} Operation consumed {1} RUs.\n", mensajeResponse.Resource.Id, mensajeResponse.RequestCharge);
             }
             catch (CosmosException ex) when (ex.StatusCode == HttpStatusCode.Conflict)
@@ -60,10 +59,10 @@ namespace Company.Function
             }
         }
 
-        public async Task QueryItemsAsync(string variable, string inittime, string endtime)
+        public async Task<Mensaje[]> QueryItemsAsync(string variable, string inittime, string endtime)
         {
-            var sqlQueryText = "SELECT * FROM c WHERE c." + variable + "time between inittime and endtime";
-
+            //var sqlQueryText = "SELECT * FROM c WHERE c." + variable + "time between inittime and endtime";
+            var sqlQueryText = "SELECT * FROM c WHERE c."+variable+" >= '"+inittime+"' and c."+variable+" <= '"+endtime+"'";
             Console.WriteLine("Running query: {0}\n", sqlQueryText);
 
             QueryDefinition queryDefinition = new QueryDefinition(sqlQueryText);
@@ -80,6 +79,7 @@ namespace Company.Function
                     Console.WriteLine("\tRead {0}\n", mensaje);
                 }
             }
+            return mensajes.ToArray();
         }
 
         public async Task GetStartedDemoAsync()

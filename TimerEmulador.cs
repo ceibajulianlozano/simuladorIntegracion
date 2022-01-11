@@ -2,7 +2,7 @@ using System;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Host;
 using Microsoft.Extensions.Logging;
-
+using Microsoft.Azure.Cosmos;
 
 using System.IO;
 using System.Net.Http;
@@ -20,8 +20,9 @@ namespace Company.Function
 
         private static HttpClient httpClient = new HttpClient();
 
+
         [FunctionName("index")]
-        public static IActionResult Index([HttpTrigger(AuthorizationLevel.Anonymous)]HttpRequest req, ExecutionContext context)
+        public static IActionResult Index([HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req, ExecutionContext context)
         {
             var path = Path.Combine(context.FunctionAppDirectory, "content", "index.html");
             return new ContentResult
@@ -32,7 +33,7 @@ namespace Company.Function
         }
 
         [FunctionName("negotiate")]
-        public static SignalRConnectionInfo Negotiate( 
+        public static SignalRConnectionInfo Negotiate(
             [HttpTrigger(AuthorizationLevel.Anonymous)] HttpRequest req,
             [SignalRConnectionInfo(HubName = "serverlessSample")] SignalRConnectionInfo connectionInfo)
         {
@@ -45,9 +46,11 @@ namespace Company.Function
         [SignalR(HubName = "serverlessSample")] IAsyncCollector<SignalRMessage> signalRMessages)
 
         {
-             // */5 * * * * * cada 5 segundos
+            // */5 * * * * * cada 5 segundos
             // 0 */5 * * * * cada 5 min
-            
+
+            int id = new Random().Next(50, 100);
+
             int precipitacion1 = new Random().Next(50, 100);
             int temperatura1 = new Random().Next(0, 50);
             int humendad1 = new Random().Next(0, 50);
@@ -77,32 +80,83 @@ namespace Company.Function
 
             int ncactual = new Random().Next(0, 100);
             int ncrecomendado = new Random().Next(0, 100);
+
+            Mensaje mensaje = new Mensaje
+            {
+                Id = id.ToString(),
+                siata = new Siata
+                {
+                    sensores = new Sensores[]{
+                        new Sensores { nombre="Sensor1",precipitacion = precipitacion1, precipitaciontime = DateTime.Now.AddHours(-precipitacion1), temperatura = temperatura1, temperaturatime= DateTime.Now.AddHours(-temperatura1), humedad = humendad1, humedadtime = DateTime.Now.AddHours(-humendad1)},
+                        new Sensores { nombre="Sensor2",precipitacion = precipitacion2, precipitaciontime = DateTime.Now.AddHours(-precipitacion2), temperatura = temperatura2, temperaturatime= DateTime.Now.AddHours(-temperatura2), humedad = humendad2, humedadtime = DateTime.Now.AddHours(-humendad2)},
+                        new Sensores { nombre="Sensor3",precipitacion = precipitacion3, precipitaciontime = DateTime.Now.AddHours(-precipitacion3), temperatura = temperatura3, temperaturatime= DateTime.Now.AddHours(-temperatura3), humedad = humendad3, humedadtime = DateTime.Now.AddHours(-humendad3)},
+                    }
+                },
+                aguaNatural = new AguaNatural
+                {
+                    turbiedadentrada = vcturbiedadentrada,
+                    turbiedadentradatime = DateTime.Now.AddHours(-vcturbiedadentrada),
+                    caudalentrada = vcconductividad,
+                    conductividadtime = DateTime.Now.AddHours(-vcconductividad),
+                    ph = vcph,
+                    phtime = DateTime.Now.AddHours(-vcph),
+                    presion = vcpresion,
+                    presiontime = DateTime.Now.AddHours(-vcpresion),
+                    color = vccolor,
+                    colortime = DateTime.Now.AddHours(-vccolor)
+                },
+                aguaPotable = new AguaPotable
+                {
+                    turbiedadsalida = apturbiedadsalida,
+                    turbiedadsalidatime = DateTime.Now.AddHours(-apturbiedadsalida),
+                    caudalsalida = apcaudalsalida,
+                    caudalsalidatime = DateTime.Now.AddHours(-apcaudalsalida),
+                    niveltanques = apniveltanques,
+                    niveltanquestime = DateTime.Now.AddHours(-apniveltanques),
+                    color = apcolor,
+                    colortime = DateTime.Now.AddHours(-apcolor)
+                },
+                nivelesCoagulacion = new NivelesCoagulacion
+                {
+                    actual = ncactual,
+                    actualtime = DateTime.Now.AddHours(-ncactual),
+                    recomendado = ncrecomendado,
+                    recomendadotime = DateTime.Now.AddHours(-ncrecomendado)
+                },
+                Partition = "potabilizacion"
+            };
+            Console.WriteLine("mensaje {0}", mensaje.ToString());
+            /*try
+            {
+                Program programDb = new Program();
+                await programDb.GetStartedDemoAsync();
+                await programDb.AddItemsToContainerAsync(mensaje);
+
+            }
+            catch (CosmosException de)
+            {
+                Exception baseException = de.GetBaseException();
+                Console.WriteLine("{0} error occurred: {1}", de.StatusCode, de);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: {0}", e);
+            }*/
+
+            String valor = mensaje.ToString();
             await signalRMessages.AddAsync(
                 new SignalRMessage
                 {
                     Target = "newMessage",
-                    Arguments = new[] { 
-                        "[{'Siata':["+
-                        "{'Sensor1':{'precipitacion': "+precipitacion1+",'precipitaciontime': '"+DateTime.Now.AddHours(-precipitacion1).ToString("MM/dd/yy H:mm:ss")+"','temperatura':"+temperatura1+",'temperaturatime':'"+DateTime.Now.AddHours(-temperatura1).ToString("MM/dd/yy H:mm:ss")+"','humedad':"+humendad1+",'humedadtime':'"+DateTime.Now.AddHours(-humendad1).ToString("MM/dd/yy H:mm:ss")+"'}},"+
-                        "{'Sensor2':{'precipitacion': "+precipitacion2+",'precipitaciontime': '"+DateTime.Now.AddHours(-precipitacion2).ToString("MM/dd/yy H:mm:ss")+"','temperatura':"+temperatura2+",'temperaturatime':'"+DateTime.Now.AddHours(-temperatura2).ToString("MM/dd/yy H:mm:ss")+"','humedad':"+humendad2+",'humedadtime':'"+DateTime.Now.AddHours(-humendad2).ToString("MM/dd/yy H:mm:ss")+"'}},"+
-                        "{'Sensor3':{'precipitacion': "+precipitacion3+",'precipitaciontime': '"+DateTime.Now.AddHours(-precipitacion3).ToString("MM/dd/yy H:mm:ss")+"','temperatura':"+temperatura3+",'temperaturatime':'"+DateTime.Now.AddHours(-temperatura3).ToString("MM/dd/yy H:mm:ss")+"','humedad':"+humendad3+",'humedadtime':'"+DateTime.Now.AddHours(-humendad3).ToString("MM/dd/yy H:mm:ss")+"'}}]},"+
-                        "{'AguaNatural':{'turbiedadentrada': "+vcturbiedadentrada+",'turbiedadentradatime': '"+DateTime.Now.AddHours(-vcturbiedadentrada).ToString("MM/dd/yy H:mm:ss")+"',"+
-                                "'caudalentrada':"+vccaudalentrada+","+"'caudalentradatime':'"+DateTime.Now.AddHours(-vccaudalentrada).ToString("MM/dd/yy H:mm:ss")+"',"+
-                                "'conductividad':"+vcconductividad+","+ "'conductividadtime':'"+DateTime.Now.AddHours(-vcconductividad).ToString("MM/dd/yy H:mm:ss")+"',"+
-                                "'ph':"+vcph+","+"'phtime':'"+DateTime.Now.AddHours(-vcph).ToString("MM/dd/yy H:mm:ss")+"',"+
-                                "'presion':"+vcpresion+","+"'presiontime':'"+DateTime.Now.AddHours(-vcpresion).ToString("MM/dd/yy H:mm:ss")+"',"+
-                                "'color':"+vccolor+","+"'colortime':'"+DateTime.Now.AddHours(-vccolor).ToString("MM/dd/yy H:mm:ss")+"'}},"+
-                        "{'AguaPotable':{'turbiedadsalida': "+apturbiedadsalida+",'turbiedadsalidatime': '"+DateTime.Now.AddHours(-apturbiedadsalida).ToString("MM/dd/yy H:mm:ss")+"',"+
-                                "'caudalsalida':"+apcaudalsalida+","+"'caudalsalidatime':'"+DateTime.Now.AddHours(-apcaudalsalida).ToString("MM/dd/yy H:mm:ss")+"',"+
-                                "'niveltanques':"+apniveltanques+","+"'niveltanquestime':'"+DateTime.Now.AddHours(-apniveltanques).ToString("MM/dd/yy H:mm:ss")+"',"+
-                                "'color':"+apcolor+",'colortime':'"+DateTime.Now.AddHours(-apcolor).ToString("MM/dd/yy H:mm:ss")+"'}},"+
-                        "{'NivelesCoagulacion':{'actual': "+ncactual+","+"'actualtime': '"+DateTime.Now.AddHours(-ncactual).ToString("MM/dd/yy H:mm:ss")+"',"+
-                                "'recomendado':"+ncrecomendado+",'recomendadotime':'"+DateTime.Now.AddHours(-ncrecomendado).ToString("MM/dd/yy H:mm:ss")+"'}}]"
+                    Arguments = new[] {
+                        valor
                     }
                 });
-            
+
+
+
         }
-         private class GitResult
+        private class GitResult
         {
             [JsonRequired]
             [JsonProperty("stargazers_count")]

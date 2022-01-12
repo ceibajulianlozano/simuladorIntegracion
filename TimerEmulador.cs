@@ -195,10 +195,55 @@ namespace Company.Function
                 Id = id.ToString(),
                 siata = new Siata
                 {
-                    sensores = new Sensores[]{
-                        new Sensores { nombre="Sensor1",precipitacion = precipitacion1, precipitaciontime = DateTime.Now.AddHours(-precipitacion1), temperatura = temperatura1, temperaturatime= DateTime.Now.AddHours(-temperatura1), humedad = humendad1, humedadtime = DateTime.Now.AddHours(-humendad1)},
-                        new Sensores { nombre="Sensor2",precipitacion = precipitacion2, precipitaciontime = DateTime.Now.AddHours(-precipitacion2), temperatura = temperatura2, temperaturatime= DateTime.Now.AddHours(-temperatura2), humedad = humendad2, humedadtime = DateTime.Now.AddHours(-humendad2)},
-                        new Sensores { nombre="Sensor3",precipitacion = precipitacion3, precipitaciontime = DateTime.Now.AddHours(-precipitacion3), temperatura = temperatura3, temperaturatime= DateTime.Now.AddHours(-temperatura3), humedad = humendad3, humedadtime = DateTime.Now.AddHours(-humendad3)},
+                  sensores = new Sensores[]{
+                        new Sensores { 
+                            id = "0101010101010",
+                            nombre="Sensor #1",
+                            estado = true,
+                            ubicacion = "boqueron",
+                            idPrecipitacion = 12,
+                            precipitacion = precipitacion1, 
+                            precipitaciontime = DateTime.Now, 
+                            idTemperatura = 12,
+                            temperatura = temperatura1, 
+                            temperaturatime= DateTime.Now, 
+                            idHumedad = 15,
+                            humedad = humendad1, 
+                            humedadtime = DateTime.Now,
+                            fechaActualizacion = DateTime.Now
+                        },
+                        new Sensores { 
+                            id = "0202020202020",
+                            nombre="Sensor #2",
+                            estado = true,
+                            ubicacion = "San José",
+                            idPrecipitacion = 12,
+                            precipitacion = precipitacion2, 
+                            precipitaciontime = DateTime.Now, 
+                            idTemperatura = 12,
+                            temperatura = temperatura2, 
+                            temperaturatime= DateTime.Now, 
+                            idHumedad = 15,
+                            humedad = humendad3, 
+                            humedadtime = DateTime.Now,
+                            fechaActualizacion = DateTime.Now
+                        },
+                        new Sensores { 
+                            id = "03030303030303",
+                            nombre="Sensor #3",
+                            estado = true,
+                            ubicacion = "Otra ubicación",
+                            idPrecipitacion = 12,
+                            precipitacion = precipitacion3, 
+                            precipitaciontime = DateTime.Now, 
+                            idTemperatura = 12,
+                            temperatura = temperatura3, 
+                            temperaturatime= DateTime.Now, 
+                            idHumedad = 15,
+                            humedad = humendad3, 
+                            humedadtime = DateTime.Now,
+                            fechaActualizacion = DateTime.Now
+                        },
                     }
                 },
                 aguaNatural = new AguaNatural

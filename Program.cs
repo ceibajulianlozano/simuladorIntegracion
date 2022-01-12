@@ -12,11 +12,11 @@ namespace Company.Function
 
         /// The Azure Cosmos DB endpoint for running this GetStarted sample.
         //private string EndpointUrl = Environment.GetEnvironmentVariable("EndpointUrl");
-        private string EndpointUrl = "https://emuladorapicosmosdb.documents.azure.com:443/";//Environment.GetEnvironmentVariable("EndpointUrl");
+        private string EndpointUrl = "https://emuladorpotapicosmosdb.documents.azure.com:443/";//Environment.GetEnvironmentVariable("EndpointUrl");
 
         /// The primary key for the Azure DocumentDB account.
         //private string PrimaryKey = Environment.GetEnvironmentVariable("PrimaryKey");
-        private string PrimaryKey = "LOgCHFJzMx74LoRI2SMXLTTvvLwvTTRVKvGkmIiBbDUNaF6hKSjVPjKZUNjW4MD3ohpAg59bZPBFRtGmnN3xHA==";//Environment.GetEnvironmentVariable("PrimaryKey");
+        private string PrimaryKey = "TC3K9slCkvF6uUe42P4CyuCU41w4VWIifKHOBCv69Dst32LFy4rYBY33B6uUARiut1FyxsisvNtmgYn1eYV7SQ==";//Environment.GetEnvironmentVariable("PrimaryKey");
 
         // The Cosmos client instance
         private CosmosClient cosmosClient;

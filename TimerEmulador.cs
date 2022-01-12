@@ -242,10 +242,12 @@ namespace Company.Function
                     Program programDb = new Program();
                     await programDb.GetStartedDemoAsync();
                     await programDb.AddItemsToContainerAsync(mensaje);
+                    mensaje.IsRegistered = true;
                 }
                 else
                 {
                     Console.WriteLine("ya no guarda");
+                    mensaje.IsRegistered = false;
                 }
 
             }
@@ -253,10 +255,12 @@ namespace Company.Function
             {
                 Exception baseException = de.GetBaseException();
                 Console.WriteLine("{0} error occurred: {1}", de.StatusCode, de);
+                mensaje.IsRegistered = false;
             }
             catch (Exception e)
             {
                 Console.WriteLine("Error: {0}", e);
+                mensaje.IsRegistered = false;
             }
 
             String valor = mensaje.ToString();
